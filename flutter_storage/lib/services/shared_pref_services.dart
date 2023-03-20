@@ -10,15 +10,14 @@ class SharedPreferencesService {
     preferences.setBool('ogrenci', userInformation.ogrenciMi);
     preferences.setInt('cinsiyet', userInformation.cinsiyet.index);
     preferences.setStringList('renkler', userInformation.renkler);
-   
   }
 
-  /*void verileriOku() async {
+  Future<UserInformation> verileriOku() async {
     final preferences = await SharedPreferences.getInstance();
-    userInformation= preferences.getString('isim') ?? '';
-    _ogrenciMi = preferences.getBool('ogrenci') ?? false;
-    _secilenCinsiyet = Cinsiyet.valuess[preferences.getInt('cinsiyet') ?? 0];
-    _secilenRenkler = preferences.getStringList('renkler') ?? <String>[];
-    setState(() {});
+    var _isim = preferences.getString('isim') ?? '';
+    var _ogrenci = preferences.getBool('ogrenci') ?? false;
+    var _cinsiyet = Cinsiyet.values[preferences.getInt('cinsiyet') ?? 0];
+    var _renkler = preferences.getStringList('renkler') ?? <String>[];
+    return UserInformation(_isim, _cinsiyet, _renkler, _ogrenci);
   }
 }

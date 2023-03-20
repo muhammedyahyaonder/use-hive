@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_storage/model/my_models.dart';
+import 'package:flutter_storage/services/secure_storage.dart';
 import 'package:flutter_storage/services/shared_pref_services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -14,11 +15,10 @@ class SharedPreferenceKullanimi extends StatefulWidget {
 
 class _SharedPreferenceKullanimiState extends State<SharedPreferenceKullanimi> {
   var _secilenCinsiyet = Cinsiyet.ERKEK;
-  final _secilenRenkler = <String>[];
+  var _secilenRenkler = <String>[];
   var _ogrenciMi = false;
   final TextEditingController _nameController = TextEditingController();
-  var _preferenceService = SharedPreferencesService();
-
+  var _preferenceService = SecureStorageService();
 
   @override
   void initState() {
@@ -51,10 +51,13 @@ class _SharedPreferenceKullanimiState extends State<SharedPreferenceKullanimi> {
                   _ogrenciMi = ogrenciMi;
                 });
               }),
-          TextButton(onPressed:() {
-            var _userInformation = UserInformation(_nameController.text, _secilenCinsiyet, _secilenRenkler, _ogrenciMi);
-              _preferenceService.verileriKaydet(_userInformation);
-          }, child: const Text('Kaydet'))
+          TextButton(
+              onPressed: () {
+                var _userInformation = UserInformation(_nameController.text,
+                    _secilenCinsiyet, _secilenRenkler, _ogrenciMi);
+                _preferenceService.verileriKaydet(_userInformation);
+              },
+              child: const Text('Kaydet'))
         ],
       ),
     );
@@ -87,15 +90,22 @@ class _SharedPreferenceKullanimiState extends State<SharedPreferenceKullanimi> {
         });
   }
 
-    final preferences = await SharedPreferences.getInstance();
+  /*final preferences = await SharedPreferences.getInstance();
     _nameController.text = preferences.getString('isim') ?? '';
     _ogrenciMi = preferences.getBool('ogrenci') ?? false;
     _secilenCinsiyet = Cinsiyet.values[preferences.getInt('cinsiyet') ?? 0];
     final _secilenRenkler = preferences.getStringList('renkler') ?? <String>[];
     @override
-  setState(() {
-      
-    });
-    
-  }
+  setState(() {*/
 
+  void _verileriOku() async {
+    var info = await _preferenceService.verileriOku();
+    _nameController.text = info.isim;
+    _secilenCinsiyet = info.cinsiyet;
+    _secilenRenkler = info.renkler;
+    _ogrenciMi = info.ogrenciMi;
+    setState(() {
+
+    });
+  }
+}
